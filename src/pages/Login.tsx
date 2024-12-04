@@ -1,10 +1,13 @@
 import { useRef } from 'react'
-import { DummySession } from '../shared/declarations/Dummyjson'
+import { useNavigate } from 'react-router-dom'
+import { DummyEndpoints, DummySession } from '../shared/declarations/Dummyjson'
 import useFetch from '../shared/hooks/useFetch'
 
 const Login = () => {
     const loginForm = useRef(null)
-    const { post } = useFetch('https://dummyjson.com/auth/login')
+    const navigate = useNavigate()
+
+    const { post } = useFetch(DummyEndpoints.LOGIN)
 
     const ingresar = async (e: React.MouseEvent) => {
         e.preventDefault()
@@ -18,6 +21,7 @@ const Login = () => {
             const json: DummySession = await post(formObject)
 
             localStorage.setItem('token', json.accessToken)
+            navigate('/products')
         }
     }
 
