@@ -1,7 +1,16 @@
+import { useRef } from 'react'
+
 const Login = () => {
+    const loginForm = useRef(null)
+
+    const ingresar = (e) => {
+        e.preventDefault()
+        console.log(123)
+    }
+
     return (
         <div>
-            <form action="">
+            <form ref={loginForm}>
                 <div className="formGroup">
                     <label htmlFor="username">Usuario</label>
                     <input id='username' name='username' type="text" />
@@ -12,7 +21,7 @@ const Login = () => {
                     <input id='password' name='password' type="password" />
                 </div>
 
-                <button type="submit">Ingresar</button>
+                <button onClick={(e) => ingresar(e)}>Ingresar</button>
             </form>
         </div>
     )
