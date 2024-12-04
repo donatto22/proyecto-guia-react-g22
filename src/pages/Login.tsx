@@ -1,7 +1,10 @@
 import { useRef } from 'react'
+import { DummySession } from '../shared/declarations/Dummyjson'
+import useFetch from '../shared/hooks/useFetch'
 
 const Login = () => {
     const loginForm = useRef(null)
+    const { post } = useFetch('https://dummyjson.com/auth/login')
 
     const ingresar = async (e: React.MouseEvent) => {
         e.preventDefault()
@@ -12,19 +15,9 @@ const Login = () => {
             const form = new FormData(formulario)
             const formObject = Object.fromEntries(form.entries())
 
-            const { username, password } = formObject
+            const json: DummySession = await post(formObject)
 
-            // login
-            const response = await fetch('https://dummyjson.com/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    username, password
-                })
-            })
-
-            const json = await response.json()
-            console.log(json)
+            localStorage.setItem('token', json.accessToken)
         }
     }
 
