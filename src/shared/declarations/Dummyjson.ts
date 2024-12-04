@@ -32,6 +32,8 @@ export type DummyProduct = {
     stock: number
     discountPercentage: number
     category: string
+    thumbnail: string
+    tags: Array<string>
 }
 
 export enum DummyEndpoints {
