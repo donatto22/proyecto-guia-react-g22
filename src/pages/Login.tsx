@@ -3,9 +3,29 @@ import { useRef } from 'react'
 const Login = () => {
     const loginForm = useRef(null)
 
-    const ingresar = (e) => {
+    const ingresar = async (e: React.MouseEvent) => {
         e.preventDefault()
-        console.log(123)
+
+        const formulario = loginForm.current
+
+        if (formulario) {
+            const form = new FormData(formulario)
+            const formObject = Object.fromEntries(form.entries())
+
+            const { username, password } = formObject
+
+            // login
+            const response = await fetch('https://dummyjson.com/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username, password
+                })
+            })
+
+            const json = await response.json()
+            console.log(json)
+        }
     }
 
     return (
