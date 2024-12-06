@@ -1,17 +1,14 @@
-import { ReactElement } from 'react'
-import { Box, HStack, Image, Link, Menu, MenuButton, MenuItem, MenuList, Text } from '@chakra-ui/react'
+import { ReactElement, useRef } from 'react'
+import { Box, Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, HStack, Image, Input, Link, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure } from '@chakra-ui/react'
 import { RiHomeLine } from "react-icons/ri"
 import { FaUsers } from "react-icons/fa"
 import { LuCircleUserRound, LuShoppingCart } from "react-icons/lu"
 
 import logo from '/my-logo.png'
 
-const NavLink = ({ icon, text }: {
-    icon: ReactElement,
-    text: string
-}) => {
+const NavLink = ({ icon, text, ref, onClick }) => {
     return (
-        <Link display='flex' gap='10px' alignItems='center'> {icon} {text}</Link>
+        <Link ref={ref} onClick={onClick} display='flex' gap='10px' alignItems='center'> {icon} {text}</Link>
     )
 }
 
@@ -31,26 +28,57 @@ const ProfileMenu = () => {
 }
 
 const Navbar = () => {
-    return (
-        <HStack minH='40px' bgColor='#1a1a1a' mb='2em' sx={{
-            '&:hover': {
-                backgroundColor: 'red'
-            }
-        }}>
-            <HStack w='70%' m='0 auto' p='1em 0' color='#eee' justifyContent='space-between'>
-                <HStack gap='1em'>
-                    <Image w='40px' src={logo} alt='logo tienda' />
-                    <Text fontSize='2xl'>Mi tienda</Text>
-                </HStack>
+    const btnRef = useRef()
+    const { isOpen, onOpen, onClose } = useDisclosure()
 
-                <HStack gap='2em'>
-                    <NavLink icon={<RiHomeLine />} text='Inicio' />
-                    <NavLink icon={<FaUsers />} text='Nosotros' />
-                    <ProfileMenu />
-                    <NavLink icon={<LuShoppingCart />} text='' />
+    return (
+        <>
+            <HStack minH='40px' bgColor='#1a1a1a' mb='2em' sx={{
+                '&:hover': {
+                    backgroundColor: 'red'
+                }
+            }}>
+                <HStack w='70%' m='0 auto' p='1em 0' color='#eee' justifyContent='space-between'>
+                    <HStack gap='1em'>
+                        <Image w='40px' src={logo} alt='logo tienda' />
+                        <Text fontSize='2xl'>Mi tienda</Text>
+                    </HStack>
+
+                    <HStack gap='2em'>
+                        <NavLink icon={<RiHomeLine />} text='Inicio' />
+                        <NavLink icon={<FaUsers />} text='Nosotros' />
+                        <ProfileMenu />
+
+                        {/* Icono del carrito */}
+                        <NavLink ref={btnRef} onClick={onOpen} icon={<LuShoppingCart />} text='' />
+                    </HStack>
                 </HStack>
             </HStack>
-        </HStack>
+
+            <Drawer
+                isOpen={isOpen}
+                placement='right'
+                onClose={onClose}
+                finalFocusRef={btnRef}
+            >
+                <DrawerOverlay />
+                <DrawerContent>
+                    <DrawerCloseButton />
+                    <DrawerHeader>Create your account</DrawerHeader>
+
+                    <DrawerBody>
+                        <Input placeholder='Type here...' />
+                    </DrawerBody>
+
+                    <DrawerFooter>
+                        <Button variant='outline' mr={3} onClick={onClose}>
+                            Cancel
+                        </Button>
+                        <Button colorScheme='blue'>Save</Button>
+                    </DrawerFooter>
+                </DrawerContent>
+            </Drawer>
+        </>
     )
 }
 
