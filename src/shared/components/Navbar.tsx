@@ -5,14 +5,29 @@ import { FaUsers } from "react-icons/fa"
 import { LuCircleUserRound, LuShoppingCart } from "react-icons/lu"
 
 import logo from '/my-logo.png'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 
-const NavLink = ({ icon, text, ref, onClick }) => {
+const NavLink = ({ icon, text, ref, onClick }: {
+    icon: ReactElement,
+    text: string,
+    onClick: () => void
+}) => {
     return (
         <Link ref={ref} onClick={onClick} display='flex' gap='10px' alignItems='center'> {icon} {text}</Link>
     )
 }
 
 const ProfileMenu = () => {
+    const navigate = useNavigate()
+
+    const logout = () => {
+        localStorage.removeItem('token')
+        toast.success('Has cerrado sesión')
+        navigate('/')
+
+    }
+
     return (
         <Menu>
             <MenuButton>
@@ -21,7 +36,7 @@ const ProfileMenu = () => {
             <MenuList color='#1a1a1a'>
                 <MenuItem>Ver Perfil</MenuItem>
                 <MenuItem>Vaciar carrito</MenuItem>
-                <MenuItem>Cerrar Sesión</MenuItem>
+                <MenuItem onClick={logout}>Cerrar Sesión</MenuItem>
             </MenuList>
         </Menu>
     )

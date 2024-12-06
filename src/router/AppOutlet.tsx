@@ -1,10 +1,16 @@
 import { Navigate, Outlet } from 'react-router-dom'
+import { Toaster } from 'sonner'
 
 const AppOutlet = () => {
     const token = localStorage.getItem('token')
 
     return (
-        token ? <Outlet /> : <Navigate to='/' />
+        <>
+            <Toaster richColors />
+            {
+                token ? <Outlet /> : <Navigate to='/' />
+            }
+        </>
     )
 }
 
