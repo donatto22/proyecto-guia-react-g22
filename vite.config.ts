@@ -7,7 +7,9 @@ export default defineConfig({
   resolve: {
     alias: {
       "@hooks": "/src/shared/hooks",
-      "@images": "/src/assets/images"
+      "@images": "/src/assets/images",
+      "@components": "/src/shared/components",
+      "@layouts": "/src/shared/layouts"
     }
   }
 })

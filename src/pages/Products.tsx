@@ -3,6 +3,7 @@ import useFetch from '../shared/hooks/useFetch'
 import { DummyEndpoints, DummyProduct, DummyProducts } from '../shared/declarations/Dummyjson'
 import Product from '../shared/components/Product'
 import { Box } from '@chakra-ui/react'
+import BaseLayout from '@layouts/BaseLayout'
 
 const Products = () => {
     const [products, setProducts] = useState<Array<DummyProduct>>()
@@ -21,13 +22,15 @@ const Products = () => {
     }, [])
 
     return (
-        <Box display='flex' flexWrap='wrap' w='65%' m='0 auto' justifyContent='space-between' gap='3em'>
-            {
-                products && products.map(p => (
-                    <Product key={p.id} product={p} />
-                ))
-            }
-        </Box >
+        <BaseLayout>
+            <Box display='flex' flexWrap='wrap' w='65%' m='0 auto' justifyContent='space-between' gap='3em'>
+                {
+                    products && products.map(p => (
+                        <Product key={p.id} product={p} />
+                    ))
+                }
+            </Box>
+        </BaseLayout>
     )
 }
 
