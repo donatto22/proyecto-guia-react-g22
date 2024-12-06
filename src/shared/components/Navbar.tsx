@@ -32,7 +32,11 @@ const ProfileMenu = () => {
 
 const Navbar = () => {
     return (
-        <HStack minH='40px' bgColor='#1a1a1a' mb='2em'>
+        <HStack minH='40px' bgColor='#1a1a1a' mb='2em' sx={{
+            '&:hover': {
+                backgroundColor: 'red'
+            }
+        }}>
             <HStack w='70%' m='0 auto' p='1em 0' color='#eee' justifyContent='space-between'>
                 <HStack gap='1em'>
                     <Image w='40px' src={logo} alt='logo tienda' />

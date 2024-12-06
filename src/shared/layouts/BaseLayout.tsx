@@ -1,6 +1,9 @@
+import { ReactElement } from 'react'
 import Navbar from '@components/Navbar'
 
-const BaseLayout = ({ children }) => {
+const BaseLayout = ({ children }: {
+    children: ReactElement
+}) => {
     return (
         <>
             <Navbar />
