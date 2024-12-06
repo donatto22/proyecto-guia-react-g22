@@ -1,8 +1,11 @@
+import { ChakraProvider } from '@chakra-ui/react'
 import AppRouter from './router/AppRouter'
 
 const App = () => {
     return (
-        <AppRouter />
+        <ChakraProvider disableGlobalStyle>
+            <AppRouter />
+        </ChakraProvider>
     )
 }
 
