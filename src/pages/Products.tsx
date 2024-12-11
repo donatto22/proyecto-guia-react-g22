@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import useFetch from '../shared/hooks/useFetch'
 import { DummyEndpoints, DummyProduct, DummyProducts } from '../shared/declarations/Dummyjson'
 import Product from '../shared/components/Product'
-import { Box, Heading, Image } from '@chakra-ui/react'
+import { Box, Heading, Image, Text } from '@chakra-ui/react'
 import BaseLayout from '@layouts/BaseLayout'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -25,6 +25,7 @@ const SwiperImages = [sale1, sale2, sale3, sale4]
 
 const Products = () => {
     const [products, setProducts] = useState<Array<DummyProduct>>()
+    const [appwriteProducts, setAppwriteProducts] = useState<Array<object>>()
 
     const { get } = useFetch(DummyEndpoints.PRODUCTS)
 
@@ -32,13 +33,11 @@ const Products = () => {
         const { products }: DummyProducts = await get()
 
         setProducts(products)
-        console.log(products)
     }
 
-    const getProductsFromAppwrite = () => {
-        const appwriteProducts = database.listDocuments(Appwrite.databaseId, Appwrite.collections.products)
-
-        console.log(appwriteProducts, 'appwriteProducts')
+    const getProductsFromAppwrite = async () => {
+        const { documents } = await database.listDocuments(Appwrite.databaseId, Appwrite.collections.products)
+        setAppwriteProducts(documents)
     }
 
     useEffect(() => {
@@ -66,7 +65,11 @@ const Products = () => {
                     <Heading size='lg'>Mis productos</Heading>
                     <hr />
 
-
+                    {
+                        appwriteProducts?.map(product => (
+                            <Box key={product.name} > <Text>{product.name} </Text> </Box>
+                        ))
+                    }
                 </Box>
 
                 <Box display='flex' flexWrap='wrap' w='65%' m='0 auto' justifyContent='space-between' gap='3em'>
