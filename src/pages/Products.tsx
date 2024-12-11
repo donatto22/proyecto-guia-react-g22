@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import useFetch from '../shared/hooks/useFetch'
 import { DummyEndpoints, DummyProduct, DummyProducts } from '../shared/declarations/Dummyjson'
 import Product from '../shared/components/Product'
-import { Box, Image } from '@chakra-ui/react'
+import { Box, Heading, Image } from '@chakra-ui/react'
 import BaseLayout from '@layouts/BaseLayout'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -18,6 +18,9 @@ import sale2 from '@images/sales/sale2.jpg'
 import sale3 from '@images/sales/sale3.jpg'
 import sale4 from '@images/sales/sale4.jpg'
 
+import { database } from '../shared/lib/appwrite'
+import { Appwrite } from '../shared/lib/env'
+
 const SwiperImages = [sale1, sale2, sale3, sale4]
 
 const Products = () => {
@@ -32,8 +35,15 @@ const Products = () => {
         console.log(products)
     }
 
+    const getProductsFromAppwrite = () => {
+        const appwriteProducts = database.listDocuments(Appwrite.databaseId, Appwrite.collections.products)
+
+        console.log(appwriteProducts, 'appwriteProducts')
+    }
+
     useEffect(() => {
         getProducts()
+        getProductsFromAppwrite()
     }, [])
 
     return (
@@ -50,6 +60,13 @@ const Products = () => {
                             ))
                         }
                     </Swiper>
+                </Box>
+
+                <Box w='65%' m='2em auto'>
+                    <Heading size='lg'>Mis productos</Heading>
+                    <hr />
+
+
                 </Box>
 
                 <Box display='flex' flexWrap='wrap' w='65%' m='0 auto' justifyContent='space-between' gap='3em'>
