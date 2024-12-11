@@ -44,7 +44,7 @@ const Products = () => {
                         modules={[Navigation, Pagination]}>
                         {
                             SwiperImages.map(image => (
-                                <SwiperSlide>
+                                <SwiperSlide key={image}>
                                     <Image pointerEvents='none' p='4em' src={image} />
                                 </SwiperSlide>
                             ))

@@ -8,13 +8,13 @@ import logo from '/my-logo.png'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
-const NavLink = ({ icon, text, ref, onClick }: {
+const NavLink = ({ icon, text, reference, onClick }: {
     icon: ReactElement,
     text: string,
     onClick: () => void
 }) => {
     return (
-        <Link ref={ref} onClick={onClick} display='flex' gap='10px' alignItems='center'> {icon} {text}</Link>
+        <Link ref={reference} onClick={onClick} display='flex' gap='10px' alignItems='center'> {icon} {text}</Link>
     )
 }
 
