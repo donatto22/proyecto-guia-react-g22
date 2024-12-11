@@ -67,7 +67,9 @@ const Products = () => {
 
                     {
                         appwriteProducts?.map(product => (
-                            <Box key={product.name} > <Text>{product.name} </Text> </Box>
+                            <Box key={product.name}>
+                                <Text>{product.name}</Text>
+                            </Box>
                         ))
                     }
                 </Box>
