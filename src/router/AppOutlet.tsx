@@ -1,3 +1,5 @@
+import Loading from '@components/Loading'
+import { Suspense } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 import { Toaster } from 'sonner'
 
@@ -8,7 +10,12 @@ const AppOutlet = () => {
         <>
             <Toaster richColors />
             {
-                token ? <Outlet /> : <Navigate to='/' />
+                token ?
+                    <Suspense fallback={<Loading />}>
+                        <Outlet />
+                    </Suspense>
+                    :
+                    <Navigate to='/' />
             }
         </>
     )

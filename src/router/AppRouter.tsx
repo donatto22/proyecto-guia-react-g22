@@ -1,10 +1,12 @@
+import { lazy } from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import AppOutlet from './AppOutlet'
 
 import Login from '../pages/Login'
-import Products from '../pages/Products'
-import SingleProduct from '../pages/SingleProduct'
+
+const Products = lazy(() => import('../pages/Products'))
+const SingleProduct = lazy(() => import('../pages/SingleProduct'))
 
 const AppRouter = () => {
     return (
