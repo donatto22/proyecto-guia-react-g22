@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import useFetch from '../shared/hooks/useFetch'
 import { DummyEndpoints, DummyProduct, DummyProducts } from '../shared/declarations/Dummyjson'
 import Product from '../shared/components/Product'
-import { Box, Heading, Image, Text } from '@chakra-ui/react'
+import { Box, FormLabel, Heading, Image, Input, Text } from '@chakra-ui/react'
 import BaseLayout from '@layouts/BaseLayout'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -18,7 +18,7 @@ import sale2 from '@images/sales/sale2.jpg'
 import sale3 from '@images/sales/sale3.jpg'
 import sale4 from '@images/sales/sale4.jpg'
 
-import { database, storage } from '../shared/lib/appwrite'
+import { database, ID, storage } from '../shared/lib/appwrite'
 import { Appwrite } from '../shared/lib/env'
 
 const SwiperImages = [sale1, sale2, sale3, sale4]
@@ -27,6 +27,7 @@ const Products = () => {
     const [products, setProducts] = useState<Array<DummyProduct>>()
     const [catPhotoUrl, setCatPhotoUrl] = useState<string>()
     const [appwriteProducts, setAppwriteProducts] = useState<Array<object>>()
+    const formulario = useRef(null)
 
     const { get } = useFetch(DummyEndpoints.PRODUCTS)
 
@@ -48,6 +49,19 @@ const Products = () => {
         // getFileView retorna la url del archivo para visualizarlo, no lo descarga
         const url = storage.getFileView(Appwrite.buckets.pictures, '675a2d2b0031abed8498')
         setCatPhotoUrl(url)
+    }
+
+    const uploadPhoto = (e) => {
+        e.preventDefault()
+
+        if (formulario.current) {
+            const form = new FormData(formulario.current)
+            const formObject = Object.fromEntries(form.entries())
+
+            console.log(formObject)
+        }
+
+        // storage.createFile(Appwrite.buckets.pictures, ID.unique(), )
     }
 
     useEffect(() => {
@@ -85,7 +99,16 @@ const Products = () => {
                     }
                 </Box>
 
-                <Image src={catPhotoUrl} alt='imagen' />
+                <br />
+
+                <Box as='form' w='65%' m='2em auto' ref={formulario}>
+                    <FormLabel htmlFor='image'>Imagen</FormLabel>
+                    <Input w='260px' id='image' name='image' type="file" />
+
+                    <button onClick={uploadPhoto}> Subir imagen </button>
+                </Box>
+
+                {/* <Image src={catPhotoUrl} alt='imagen' w='500px' m='0 auto' borderRadius='20px' />
 
                 <Box display='flex' flexWrap='wrap' w='65%' m='0 auto' justifyContent='space-between' gap='3em'>
                     {
@@ -93,7 +116,7 @@ const Products = () => {
                             <Product key={p.id} product={p} />
                         ))
                     }
-                </Box>
+                </Box> */}
             </>
         </BaseLayout>
     )
