@@ -20,6 +20,7 @@ import sale4 from '@images/sales/sale4.jpg'
 
 import { database, ID, storage } from '../shared/lib/appwrite'
 import { Appwrite } from '../shared/lib/env'
+import { toast } from 'sonner'
 
 const SwiperImages = [sale1, sale2, sale3, sale4]
 
@@ -58,10 +59,25 @@ const Products = () => {
             const form = new FormData(formulario.current)
             const formObject = Object.fromEntries(form.entries())
 
-            console.log(formObject)
+            console.log(formObject.active)
+
+            const product = {
+                name: formObject.name,
+                description: formObject.description,
+                price: Number(formObject.price),
+                active: formObject.active ? true : false
+            }
+
+            database.createDocument(Appwrite.databaseId, Appwrite.collections.products, ID.unique(), product)
+
+            // storage.createFile(Appwrite.buckets.pictures, ID.unique(), image).then(() => {
+            //     toast.success('Archivo subido')
+            // }).catch(() => {
+            //     toast.error('El archivo no se llegó a subir')
+            // })
+
         }
 
-        // storage.createFile(Appwrite.buckets.pictures, ID.unique(), )
     }
 
     useEffect(() => {
@@ -102,8 +118,30 @@ const Products = () => {
                 <br />
 
                 <Box as='form' w='65%' m='2em auto' ref={formulario}>
-                    <FormLabel htmlFor='image'>Imagen</FormLabel>
-                    <Input w='260px' id='image' name='image' type="file" />
+                    <div>
+                        <FormLabel htmlFor='image'>Imagen</FormLabel>
+                        <Input w='260px' id='image' name='image' type="file" />
+                    </div>
+
+                    <div>
+                        <FormLabel htmlFor='name'>namen</FormLabel>
+                        <Input w='260px' id='name' name='name' type="text" />
+                    </div>
+
+                    <div>
+                        <FormLabel htmlFor='price'>pricen</FormLabel>
+                        <Input w='260px' id='price' name='price' type="number" />
+                    </div>
+
+                    <div>
+                        <FormLabel htmlFor='description'>descriptionn</FormLabel>
+                        <Input w='260px' id='description' name='description' type="text" />
+                    </div>
+
+                    <div>
+                        <label htmlFor="active">active</label>
+                        <input type="checkbox" name="active" id="active" />
+                    </div>
 
                     <button onClick={uploadPhoto}> Subir imagen </button>
                 </Box>
