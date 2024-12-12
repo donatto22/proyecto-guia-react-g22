@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import useFetch from '../shared/hooks/useFetch'
 import { DummyEndpoints, DummyProduct, DummyProducts } from '../shared/declarations/Dummyjson'
 import Product from '../shared/components/Product'
-import { Box, FormLabel, Heading, Image, Input, Text } from '@chakra-ui/react'
+import { Box, Button, FormLabel, Heading, Image, Input, Text } from '@chakra-ui/react'
 import BaseLayout from '@layouts/BaseLayout'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -28,6 +28,7 @@ const Products = () => {
     const [products, setProducts] = useState<Array<DummyProduct>>()
     const [catPhotoUrl, setCatPhotoUrl] = useState<string>()
     const [appwriteProducts, setAppwriteProducts] = useState<Array<object>>()
+
     const formulario = useRef(null)
 
     const { get } = useFetch(DummyEndpoints.PRODUCTS)
@@ -50,6 +51,13 @@ const Products = () => {
         // getFileView retorna la url del archivo para visualizarlo, no lo descarga
         const url = storage.getFileView(Appwrite.buckets.pictures, '675a2d2b0031abed8498')
         setCatPhotoUrl(url)
+
+        console.log(catPhotoUrl, 'getCatPhoto')
+    }
+
+    const deletePhoto = () => {
+        storage.deleteFile(Appwrite.buckets.pictures, '675a2d2b0031abed8498')
+        setCatPhotoUrl('')
     }
 
     const uploadPhoto = async (e) => {
@@ -79,11 +87,22 @@ const Products = () => {
             database.createDocument(Appwrite.databaseId, Appwrite.collections.products, ID.unique(), product)
                 .then(() => {
                     toast.success('Producto creado')
+                    formulario.current.reset()
+                    getProductsFromAppwrite()
                 }).catch(() => {
                     toast.error('Producto no se llegó a subir')
                 })
         }
 
+    }
+
+    const deleteAppwriteProduct = async (id) => {
+        await database.deleteDocument(Appwrite.databaseId, Appwrite.collections.products, id).then(() => {
+            toast.success('Gatito eliminado')
+            getProductsFromAppwrite()
+        }).catch(() => {
+            toast.error('No se eliminó el producto')
+        })
     }
 
     useEffect(() => {
@@ -117,6 +136,7 @@ const Products = () => {
                             <Box key={product.name}>
                                 <Image src={product.thumbnail} width='100px' />
                                 <Text>{product.name}</Text>
+                                <Button onClick={() => deleteAppwriteProduct(product.$id)}>Eliminar</Button>
                             </Box>
                         ))
                     }
@@ -153,7 +173,15 @@ const Products = () => {
                     <button onClick={uploadPhoto}> Subir imagen </button>
                 </Box>
 
-                {/* <Image src={catPhotoUrl} alt='imagen' w='500px' m='0 auto' borderRadius='20px' />
+                {
+                    catPhotoUrl != undefined &&
+                    (
+                        <>
+                            <Image src={catPhotoUrl} alt='imagen' w='500px' m='0 auto' borderRadius='20px' />
+                            <Button onClick={deletePhoto}>Eliminar gatito</Button>
+                        </>
+                    )
+                }
 
                 <Box display='flex' flexWrap='wrap' w='65%' m='0 auto' justifyContent='space-between' gap='3em'>
                     {
@@ -161,7 +189,7 @@ const Products = () => {
                             <Product key={p.id} product={p} />
                         ))
                     }
-                </Box> */}
+                </Box>
             </>
         </BaseLayout>
     )
