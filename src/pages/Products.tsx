@@ -52,30 +52,36 @@ const Products = () => {
         setCatPhotoUrl(url)
     }
 
-    const uploadPhoto = (e) => {
+    const uploadPhoto = async (e) => {
         e.preventDefault()
 
         if (formulario.current) {
             const form = new FormData(formulario.current)
             const formObject = Object.fromEntries(form.entries())
 
-            console.log(formObject.active)
+            console.log(formObject)
+
+            // se sube la imagen
+            const imageId = ID.unique()
+            await storage.createFile(Appwrite.buckets.pictures, imageId, formObject.image)
+
+            // obtengo el url que va en el thumbnail
+            const url: string = storage.getFilePreview(Appwrite.buckets.pictures, imageId)
 
             const product = {
                 name: formObject.name,
+                thumbnail: url,
                 description: formObject.description,
                 price: Number(formObject.price),
                 active: formObject.active ? true : false
             }
 
             database.createDocument(Appwrite.databaseId, Appwrite.collections.products, ID.unique(), product)
-
-            // storage.createFile(Appwrite.buckets.pictures, ID.unique(), image).then(() => {
-            //     toast.success('Archivo subido')
-            // }).catch(() => {
-            //     toast.error('El archivo no se llegó a subir')
-            // })
-
+                .then(() => {
+                    toast.success('Producto creado')
+                }).catch(() => {
+                    toast.error('Producto no se llegó a subir')
+                })
         }
 
     }
@@ -109,6 +115,7 @@ const Products = () => {
                     {
                         appwriteProducts?.map(product => (
                             <Box key={product.name}>
+                                <Image src={product.thumbnail} width='100px' />
                                 <Text>{product.name}</Text>
                             </Box>
                         ))
