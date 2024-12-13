@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import useFetch from '../shared/hooks/useFetch'
 import { DummyEndpoints, DummyProduct, DummyProducts } from '../shared/declarations/Dummyjson'
 import Product from '../shared/components/Product'
-import { Box, Button, FormLabel, Heading, Image, Input, Text } from '@chakra-ui/react'
+import { Box, Button, FormLabel, Heading, Image, Input } from '@chakra-ui/react'
 import BaseLayout from '@layouts/BaseLayout'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -21,6 +21,7 @@ import sale4 from '@images/sales/sale4.jpg'
 import { database, ID, storage } from '../shared/lib/appwrite'
 import { Appwrite } from '../shared/lib/env'
 import { toast } from 'sonner'
+import AppwriteProduct from '@components/AppwriteProduct'
 
 const SwiperImages = [sale1, sale2, sale3, sale4]
 
@@ -30,7 +31,6 @@ const Products = () => {
     const [appwriteProducts, setAppwriteProducts] = useState<Array<object>>()
 
     const formulario = useRef(null)
-
     const { get } = useFetch(DummyEndpoints.PRODUCTS)
 
     const getProducts = async () => {
@@ -96,7 +96,7 @@ const Products = () => {
 
     }
 
-    const deleteAppwriteProduct = async (id) => {
+    const deleteAppwriteProduct = async (id: string) => {
         await database.deleteDocument(Appwrite.databaseId, Appwrite.collections.products, id).then(() => {
             toast.success('Gatito eliminado')
             getProductsFromAppwrite()
@@ -133,14 +133,11 @@ const Products = () => {
 
                     {
                         appwriteProducts?.map(product => (
-                            <Box key={product.name}>
-                                <Image src={product.thumbnail} width='100px' />
-                                <Text>{product.name}</Text>
-                                <Button onClick={() => deleteAppwriteProduct(product.$id)}>Eliminar</Button>
-                            </Box>
+                            <AppwriteProduct product={product} deleteAppwriteProduct={deleteAppwriteProduct} />
                         ))
                     }
                 </Box>
+
 
                 <br />
 
