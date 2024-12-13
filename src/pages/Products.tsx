@@ -133,7 +133,7 @@ const Products = () => {
 
                     {
                         appwriteProducts?.map(product => (
-                            <AppwriteProduct product={product} deleteAppwriteProduct={deleteAppwriteProduct} />
+                            <AppwriteProduct key={product.name} product={product} deleteAppwriteProduct={deleteAppwriteProduct} />
                         ))
                     }
                 </Box>
