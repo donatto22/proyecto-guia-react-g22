@@ -114,7 +114,7 @@ const Products = () => {
     return (
         <BaseLayout>
             <>
-                <Box width='1000px' m='0 auto'>
+                <Box id='fresa' width='1000px' m='0 auto'>
                     <Swiper pagination={true} navigation={true}
                         modules={[Navigation, Pagination]}>
                         {
