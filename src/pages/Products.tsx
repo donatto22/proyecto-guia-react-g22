@@ -18,10 +18,11 @@ import sale2 from '@images/sales/sale2.jpg'
 import sale3 from '@images/sales/sale3.jpg'
 import sale4 from '@images/sales/sale4.jpg'
 
-import { database, ID, storage } from '../shared/lib/appwrite'
+import { account, database, ID, storage } from '../shared/lib/appwrite'
 import { Appwrite } from '../shared/lib/env'
 import { toast } from 'sonner'
 import AppwriteProduct from '@components/AppwriteProduct'
+import { useLocation } from 'react-router-dom'
 
 const SwiperImages = [sale1, sale2, sale3, sale4]
 
@@ -29,6 +30,8 @@ const Products = () => {
     const [products, setProducts] = useState<Array<DummyProduct>>()
     const [catPhotoUrl, setCatPhotoUrl] = useState<string>()
     const [appwriteProducts, setAppwriteProducts] = useState<Array<object>>()
+
+    const location = useLocation()
 
     const formulario = useRef(null)
     const { get } = useFetch(DummyEndpoints.PRODUCTS)
@@ -105,10 +108,17 @@ const Products = () => {
         })
     }
 
+    const validateEmail = async () => {
+        await account.createVerification(`http://localhost:5173${location.pathname}`).then(() => {
+            toast.success('Correo enviado')
+        })
+    }
+
     useEffect(() => {
         getProducts()
         getProductsFromAppwrite()
         getCatPhoto()
+        // validateEmail()
     }, [])
 
     return (
