@@ -1,17 +1,15 @@
 import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { DummyEndpoints, DummySession } from '../shared/declarations/Dummyjson'
 
 import { Box, Button, FormLabel, Input, Stack } from '@chakra-ui/react'
 
 import loginBackground from '@images/login-background.jpg'
-import useFetch from '@hooks/useFetch'
+import { account } from '../shared/lib/appwrite'
+import { toast } from 'sonner'
 
 const Login = () => {
     const loginForm = useRef(null)
     const navigate = useNavigate()
-
-    const { post } = useFetch(DummyEndpoints.LOGIN)
 
     const ingresar = async (e: React.MouseEvent) => {
         e.preventDefault()
@@ -20,11 +18,12 @@ const Login = () => {
 
         if (formulario) {
             const form = new FormData(formulario)
-            const formObject = Object.fromEntries(form.entries())
+            const { email, password } = Object.fromEntries(form.entries())
 
-            const json: DummySession = await post(formObject)
+            const session = await account.createEmailPasswordSession(email, password)
 
-            localStorage.setItem('token', json.accessToken)
+            localStorage.setItem('sessionId', session.$id)
+
             navigate('/products')
         }
     }
@@ -37,12 +36,12 @@ const Login = () => {
                 <Box bgColor='#422F21' padding='2em' borderRadius='20px'>
                     <Box as='form' ref={loginForm} color='beige' display='flex' flexDir='column' gap='1em'>
                         <div className="formGroup">
-                            <FormLabel htmlFor='username'>Usuario</FormLabel>
-                            <Input w='260px' id='username' name='username' type="text" />
+                            <FormLabel htmlFor='email'>Correo</FormLabel>
+                            <Input w='260px' id='email' name='email' type="email" />
                         </div>
 
                         <div className="formGroup">
-                            <FormLabel htmlFor='password'>Usuario</FormLabel>
+                            <FormLabel htmlFor='password'>Contraseña</FormLabel>
                             <Input w='260px' id='password' name='password' type="password" />
                         </div>
 
