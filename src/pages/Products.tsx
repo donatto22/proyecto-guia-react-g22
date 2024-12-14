@@ -109,16 +109,24 @@ const Products = () => {
     }
 
     const validateEmail = async () => {
-        await account.createVerification(`http://localhost:5173${location.pathname}`).then(() => {
-            toast.success('Correo enviado')
-        })
+        // const urlParams = new URLSearchParams(window.location.search)
+
+        // const userId = urlParams.get('userId')!
+        // const secret = urlParams.get('secret')!
+
+        // await account.updateVerification(userId, secret).then(() => {
+        //     toast.success('Correo verificado')
+        // })
+
+        const cuenta = await account.get()
+        console.log(cuenta)
     }
 
     useEffect(() => {
         getProducts()
         getProductsFromAppwrite()
         getCatPhoto()
-        // validateEmail()
+        validateEmail()
     }, [])
 
     return (
