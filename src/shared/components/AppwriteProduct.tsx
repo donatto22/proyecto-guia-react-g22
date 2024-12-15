@@ -1,10 +1,16 @@
-import { Box, Button, FormControl, FormLabel, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useDisclosure } from '@chakra-ui/react'
+import { Box, Button, ButtonGroup, FormControl, FormLabel, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, Tooltip, useDisclosure } from '@chakra-ui/react'
 import { useEffect, useRef, useState } from 'react'
 import { database, ID, storage } from '../lib/appwrite'
 import { Appwrite } from '../lib/env'
 import { toast } from 'sonner'
+import { PersonalProduct } from '../declarations/Database'
 
-const AppwriteProduct = ({ product, deleteAppwriteProduct }) => {
+import { MdModeEdit, MdDelete } from "react-icons/md"
+
+const AppwriteProduct = ({ product, deleteAppwriteProduct }: {
+    product: PersonalProduct
+    deleteAppwriteProduct: (id: string) => void
+}) => {
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     const [imageUrl, setImageUrl] = useState<string>()
@@ -24,7 +30,7 @@ const AppwriteProduct = ({ product, deleteAppwriteProduct }) => {
 
         if (formulario) {
             const form = new FormData(formulario)
-            const { nuevaImagen } = Object.fromEntries(form.entries())
+            const { nuevaImagen } = Object.fromEntries(form.entries()) as { [k: string]: File }
 
             const idUnique = ID.unique()
             await storage.createFile(Appwrite.buckets.pictures, idUnique, nuevaImagen)
@@ -34,7 +40,7 @@ const AppwriteProduct = ({ product, deleteAppwriteProduct }) => {
                 name: name,
                 description: description,
                 imageId: idUnique,
-                price: Number(price),
+                price: price,
                 active: active
             }
 
@@ -57,11 +63,30 @@ const AppwriteProduct = ({ product, deleteAppwriteProduct }) => {
     }, [])
 
     return (
-        <Box key={product.name}>
-            <Image src={imageUrl} width='100px' />
-            <Text>{product.name}</Text>
-            <Button onClick={() => deleteAppwriteProduct(product.$id)}>Eliminar</Button>
-            <Button onClick={onOpen}>Editar</Button>
+        <Box key={product.name} bgColor='#eee' borderRadius='20px' w='300px' display='flex' gap='1em'>
+            <Image src={imageUrl} width='100px' borderRadius='20px' p={2} />
+            <Box display='flex' flexDir='column' justifyContent='space-around'>
+                <Text fontSize='20px'>{product.name}</Text>
+                <ButtonGroup>
+                    <Tooltip hasArrow label='Edit'>
+                        <Button bgColor='#ddd' sx={{
+                            '&:hover': {
+                                bgColor: '#feddba',
+                                color: '#da7105'
+                            }
+                        }} onClick={onOpen}><MdModeEdit size='20px' /></Button>
+                    </Tooltip>
+
+                    <Tooltip hasArrow label='Delete'>
+                        <Button bgColor='#ddd' sx={{
+                            '&:hover': {
+                                bgColor: '#ffd3d3',
+                                color: '#af0000'
+                            }
+                        }} onClick={() => deleteAppwriteProduct(product.$id)}><MdDelete size='20px' /></Button>
+                    </Tooltip>
+                </ButtonGroup>
+            </Box>
 
             <Modal
                 isCentered
@@ -91,7 +116,7 @@ const AppwriteProduct = ({ product, deleteAppwriteProduct }) => {
 
                         <FormControl mt={4}>
                             <FormLabel>Precio</FormLabel>
-                            <Input type='number' value={price} onChange={(e) => setPrice(e.target.value)} />
+                            <Input type='number' value={price} onChange={(e) => setPrice(Number(e.target.value))} />
                         </FormControl>
 
                         <FormControl mt={4} display='flex' alignItems='center'>
@@ -108,7 +133,7 @@ const AppwriteProduct = ({ product, deleteAppwriteProduct }) => {
                     </ModalFooter>
                 </ModalContent>
             </Modal>
-        </Box>
+        </Box >
     )
 }
 

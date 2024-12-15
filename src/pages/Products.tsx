@@ -126,7 +126,7 @@ const Products = () => {
         getProducts()
         getProductsFromAppwrite()
         getCatPhoto()
-        validateEmail()
+        // validateEmail()
     }, [])
 
     return (
@@ -149,13 +149,14 @@ const Products = () => {
                     <Heading size='lg'>Mis productos</Heading>
                     <hr />
 
-                    {
-                        appwriteProducts?.map(product => (
-                            <AppwriteProduct key={product.name} product={product} deleteAppwriteProduct={deleteAppwriteProduct} />
-                        ))
-                    }
+                    <Box gap='1em' display='flex' overflowX='scroll' mt={4} pb={4}>
+                        {
+                            appwriteProducts?.map(product => (
+                                <AppwriteProduct key={product.name} product={product} deleteAppwriteProduct={deleteAppwriteProduct} />
+                            ))
+                        }
+                    </Box>
                 </Box>
-
 
                 <br />
 
@@ -187,16 +188,6 @@ const Products = () => {
 
                     <button onClick={uploadPhoto}> Subir imagen </button>
                 </Box>
-
-                {
-                    catPhotoUrl != undefined &&
-                    (
-                        <>
-                            <Image src={catPhotoUrl} alt='imagen' w='500px' m='0 auto' borderRadius='20px' />
-                            <Button onClick={deletePhoto}>Eliminar gatito</Button>
-                        </>
-                    )
-                }
 
                 <Box display='flex' flexWrap='wrap' w='65%' m='0 auto' justifyContent='space-between' gap='3em'>
                     {
