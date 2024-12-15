@@ -1,14 +1,14 @@
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { Box, Button, FormLabel, Input, Stack, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react'
+import { Box, Button, FormLabel, Image, Input, Stack, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react'
 
 import loginBackground from '@images/login-background.jpg'
 import { account, database, ID } from '../shared/lib/appwrite'
-import { Resend } from 'resend';
-import Email from '@components/Email'
 import { Appwrite } from '../shared/lib/env'
 import { toast, Toaster } from 'sonner'
+
+import logo from '/my-logo.png'
 
 const Login = () => {
     const loginForm = useRef(null)
@@ -22,7 +22,7 @@ const Login = () => {
 
         if (formulario) {
             const form = new FormData(formulario)
-            const { email, password } = Object.fromEntries(form.entries())
+            const { email, password } = Object.fromEntries(form.entries()) as { [k: string]: string }
 
             const session = await account.createEmailPasswordSession(email, password)
 
@@ -32,14 +32,14 @@ const Login = () => {
         }
     }
 
-    const crearCuenta = async (e) => {
+    const crearCuenta = async (e: React.MouseEvent<HTMLDivElement>) => {
         e.preventDefault()
 
         const formulario = crearCuentaForm.current
 
         if (formulario) {
             const form = new FormData(formulario)
-            const { name, email, password } = Object.fromEntries(form.entries())
+            const { name, email, password } = Object.fromEntries(form.entries()) as { [k: string]: string }
 
             const accountId = ID.unique()
             await account.create(accountId, email, password, name)
@@ -52,30 +52,15 @@ const Login = () => {
         }
     }
 
-    const sendEmail = async () => {
-        const resend = new Resend(import.meta.env.VITE_RESEND_API_KEY)
-
-        const resultado = await resend.emails.send({
-            from: '<constantinne9@gmail.com>',
-            to: ['grenwket@gmail.com'],
-            subject: 'Correo de prueba',
-            react: <Email />
-        })
-
-        console.log(resultado)
-    }
-
-    useEffect(() => {
-        // sendEmail()
-    }, [])
-
     return (
         <>
             <Toaster richColors />
             <Stack direction='row' h='100vh'>
                 <Box w='50%' bgImg={loginBackground} bgPos='center' bgSize='cover' />
 
-                <Box w='50%' display='flex' alignItems='center' justifyContent='center'>
+                <Box w='50%' display='flex' flexDir='column' alignItems='center' justifyContent='center' gap='3em'>
+                    <Image src={logo} width='60px' filter='invert(1)' />
+
                     <Tabs>
                         <TabList>
                             <Tab>Ingresar</Tab>
@@ -84,38 +69,39 @@ const Login = () => {
 
                         <TabPanels>
                             <TabPanel>
-                                <Box minH='400px' as='form' ref={loginForm} display='flex' flexDir='column' gap='1em'>
+                                <Box onSubmit={(e: React.MouseEvent<HTMLDivElement>) => ingresar(e)} as='form' ref={loginForm} display='flex' flexDir='column' gap='2em'>
                                     <div className="formGroup">
                                         <FormLabel htmlFor='email'>Correo</FormLabel>
-                                        <Input w='260px' id='email' name='email' type="email" />
+                                        <Input required w='260px' id='email' name='email' type="email" />
                                     </div>
 
                                     <div className="formGroup">
                                         <FormLabel htmlFor='password'>Contraseña</FormLabel>
-                                        <Input w='260px' id='password' name='password' type="password" />
+                                        <Input required w='260px' id='password' name='password' type="password" />
                                     </div>
 
-                                    <Button onClick={(e) => ingresar(e)}>Ingresar</Button>
+                                    <Button type='submit'>Ingresar</Button>
                                 </Box>
                             </TabPanel>
                             <TabPanel>
-                                <Box ref={crearCuentaForm} minH='400px' as='form' display='flex' flexDir='column' gap='1em'>
+                                <Box onSubmit={(e: React.MouseEvent<HTMLDivElement>) => crearCuenta(e)}
+                                    ref={crearCuentaForm} as='form' display='flex' flexDir='column' gap='1em'>
                                     <div className="formGroup">
                                         <FormLabel htmlFor='name'>Nombre</FormLabel>
-                                        <Input w='260px' id='name' name='name' type="text" />
+                                        <Input required w='260px' id='name' name='name' type="text" />
                                     </div>
 
                                     <div className="formGroup">
                                         <FormLabel htmlFor='email'>Correo</FormLabel>
-                                        <Input w='260px' id='email' name='email' type="email" />
+                                        <Input required w='260px' id='email' name='email' type="email" />
                                     </div>
 
                                     <div className="formGroup">
                                         <FormLabel htmlFor='password'>Contraseña</FormLabel>
-                                        <Input w='260px' id='password' name='password' type="password" />
+                                        <Input required w='260px' id='password' name='password' type="password" />
                                     </div>
 
-                                    <Button onClick={(e) => crearCuenta(e)}>Crear cuenta</Button>
+                                    <Button type='submit'>Crear cuenta</Button>
                                 </Box>
                             </TabPanel>
                         </TabPanels>
