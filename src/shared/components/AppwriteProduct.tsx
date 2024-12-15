@@ -78,11 +78,7 @@ const AppwriteProduct = ({ product, deleteAppwriteProduct }: {
                         }} onClick={onOpen}><MdModeEdit size='20px' /></Button>
                     </Tooltip>
 
-                    <Tooltip hasArrow label='Delete'>
-                        <DeleteButton action={() => {
-                            deleteAppwriteProduct(product.$id)
-                        }} />
-                    </Tooltip>
+                    <DeleteButton action={() => { deleteAppwriteProduct(product.$id) }} />
                 </ButtonGroup>
             </Box>
 

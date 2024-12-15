@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { Button, useDisclosure } from '@chakra-ui/react'
+import { Button, Tooltip, useDisclosure } from '@chakra-ui/react'
 import Dialog from './Dialog'
 import { MdDelete } from 'react-icons/md'
 
@@ -13,12 +13,14 @@ const DeleteButton = ({ action, confirmTitle }: {
 
     return (
         <>
-            <Button bgColor='#ddd' sx={{
-                '&:hover': {
-                    bgColor: '#ffd3d3',
-                    color: '#af0000'
-                }
-            }} onClick={onOpen}><MdDelete size='20px' /></Button>
+            <Tooltip hasArrow label='Delete'>
+                <Button bgColor='#ddd' sx={{
+                    '&:hover': {
+                        bgColor: '#ffd3d3',
+                        color: '#af0000'
+                    }
+                }} onClick={onOpen}><MdDelete size='20px' /></Button>
+            </Tooltip>
 
             <Dialog action={action}
                 isOpen={isOpen} onClose={onClose} cancelRef={cancelRef}

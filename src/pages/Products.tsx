@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import useFetch from '../shared/hooks/useFetch'
 import { DummyEndpoints, DummyProduct, DummyProducts } from '../shared/declarations/Dummyjson'
 import Product from '../shared/components/Product'
-import { Box, FormLabel, Heading, Image, Input } from '@chakra-ui/react'
+import { Box, Button, FormLabel, Heading, HStack, Image, Input, Stack } from '@chakra-ui/react'
 import BaseLayout from '@layouts/BaseLayout'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -142,7 +142,10 @@ const Products = () => {
                 </Box>
 
                 <Box w='65%' m='2em auto'>
-                    <Heading size='lg'>Mis productos</Heading>
+                    <HStack justifyContent='space-between' mb={4}>
+                        <Heading size='lg'>Mis productos</Heading>
+                        <Button>Agregar</Button>
+                    </HStack>
                     <hr />
 
                     <Box gap='1em' display='flex' overflowX='scroll' mt={4} pb={4}>
