@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import useFetch from '../shared/hooks/useFetch'
 import { DummyEndpoints, DummyProduct, DummyProducts } from '../shared/declarations/Dummyjson'
 import Product from '../shared/components/Product'
-import { Box, Button, FormLabel, Heading, Image, Input } from '@chakra-ui/react'
+import { Box, FormLabel, Heading, Image, Input } from '@chakra-ui/react'
 import BaseLayout from '@layouts/BaseLayout'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -23,15 +23,14 @@ import { Appwrite } from '../shared/lib/env'
 import { toast } from 'sonner'
 import AppwriteProduct from '@components/AppwriteProduct'
 import { useLocation } from 'react-router-dom'
+import { PersonalProduct } from 'src/shared/declarations/Database'
 
 const SwiperImages = [sale1, sale2, sale3, sale4]
 
 const Products = () => {
     const [products, setProducts] = useState<Array<DummyProduct>>()
     const [catPhotoUrl, setCatPhotoUrl] = useState<string>()
-    const [appwriteProducts, setAppwriteProducts] = useState<Array<object>>()
-
-    const location = useLocation()
+    const [appwriteProducts, setAppwriteProducts] = useState<Array<PersonalProduct>>()
 
     const formulario = useRef(null)
     const { get } = useFetch(DummyEndpoints.PRODUCTS)
@@ -45,6 +44,8 @@ const Products = () => {
     const getProductsFromAppwrite = async () => {
         const { documents } = await database.listDocuments(Appwrite.databaseId, Appwrite.collections.products)
         setAppwriteProducts(documents)
+
+        console.log(documents)
     }
 
     const getCatPhoto = () => {
@@ -56,11 +57,6 @@ const Products = () => {
         setCatPhotoUrl(url)
 
         console.log(catPhotoUrl, 'getCatPhoto')
-    }
-
-    const deletePhoto = () => {
-        storage.deleteFile(Appwrite.buckets.pictures, '675a2d2b0031abed8498')
-        setCatPhotoUrl('')
     }
 
     const uploadPhoto = async (e) => {

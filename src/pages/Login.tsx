@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { Box, Button, FormLabel, Image, Input, Stack, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react'
@@ -52,6 +52,12 @@ const Login = () => {
         }
     }
 
+    useEffect(() => {
+        const session = localStorage.getItem('cookieFallback')
+
+        if (session) navigate('/products')
+    })
+
     return (
         <>
             <Toaster richColors />
@@ -59,7 +65,7 @@ const Login = () => {
                 <Box w='50%' bgImg={loginBackground} bgPos='center' bgSize='cover' />
 
                 <Box w='50%' display='flex' flexDir='column' alignItems='center' justifyContent='center' gap='3em'>
-                    <Image src={logo} width='60px' filter='invert(1)' />
+                    <Image src={logo} width='50px' filter='invert(1)' />
 
                     <Tabs>
                         <TabList>

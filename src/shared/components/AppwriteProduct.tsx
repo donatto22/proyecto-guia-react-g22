@@ -1,11 +1,12 @@
-import { Box, Button, ButtonGroup, FormControl, FormLabel, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, Tooltip, useDisclosure } from '@chakra-ui/react'
 import { useEffect, useRef, useState } from 'react'
-import { database, ID, storage } from '../lib/appwrite'
-import { Appwrite } from '../lib/env'
+import { Box, Button, ButtonGroup, FormControl, FormLabel, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, Tooltip, useDisclosure } from '@chakra-ui/react'
 import { toast } from 'sonner'
 import { PersonalProduct } from '../declarations/Database'
+import { database, ID, storage } from '../lib/appwrite'
+import { Appwrite } from '../lib/env'
 
-import { MdModeEdit, MdDelete } from "react-icons/md"
+import { MdModeEdit } from "react-icons/md"
+import DeleteButton from './DeleteButton'
 
 const AppwriteProduct = ({ product, deleteAppwriteProduct }: {
     product: PersonalProduct
@@ -78,12 +79,9 @@ const AppwriteProduct = ({ product, deleteAppwriteProduct }: {
                     </Tooltip>
 
                     <Tooltip hasArrow label='Delete'>
-                        <Button bgColor='#ddd' sx={{
-                            '&:hover': {
-                                bgColor: '#ffd3d3',
-                                color: '#af0000'
-                            }
-                        }} onClick={() => deleteAppwriteProduct(product.$id)}><MdDelete size='20px' /></Button>
+                        <DeleteButton action={() => {
+                            deleteAppwriteProduct(product.$id)
+                        }} />
                     </Tooltip>
                 </ButtonGroup>
             </Box>
