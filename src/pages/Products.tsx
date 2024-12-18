@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import useFetch from '../shared/hooks/useFetch'
 import { DummyEndpoints, DummyProduct, DummyProducts } from '../shared/declarations/Dummyjson'
 import Product from '../shared/components/Product'
-import { Box, Button, FormLabel, Heading, HStack, Image, Input, Stack } from '@chakra-ui/react'
+import { Box, Button, FormLabel, Heading, HStack, Image, Input } from '@chakra-ui/react'
 import BaseLayout from '@layouts/BaseLayout'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -18,22 +18,27 @@ import sale2 from '@images/sales/sale2.jpg'
 import sale3 from '@images/sales/sale3.jpg'
 import sale4 from '@images/sales/sale4.jpg'
 
-import { account, database, ID, storage } from '../shared/lib/appwrite'
+import { ID } from '../shared/lib/appwrite'
 import { Appwrite } from '../shared/lib/env'
 import { toast } from 'sonner'
 import AppwriteProduct from '@components/AppwriteProduct'
-import { useLocation } from 'react-router-dom'
 import { PersonalProduct } from 'src/shared/declarations/Database'
+import useAppwrite from '@hooks/useAppwrite'
+import { getFormEntries } from '../shared/util/getFormEntries'
 
 const SwiperImages = [sale1, sale2, sale3, sale4]
 
 const Products = () => {
     const [products, setProducts] = useState<Array<DummyProduct>>()
-    const [catPhotoUrl, setCatPhotoUrl] = useState<string>()
     const [appwriteProducts, setAppwriteProducts] = useState<Array<PersonalProduct>>()
 
     const formulario = useRef(null)
     const { get } = useFetch(DummyEndpoints.PRODUCTS)
+
+    // separando en trocitos
+    const { fromDatabase, fromStorage } = useAppwrite()
+    const productsCollection = fromDatabase(Appwrite.databaseId).collection(Appwrite.collections.products)
+    const photoBucket = fromStorage().bucket(Appwrite.buckets.pictures)
 
     const getProducts = async () => {
         const { products }: DummyProducts = await get()
@@ -42,61 +47,44 @@ const Products = () => {
     }
 
     const getProductsFromAppwrite = async () => {
-        const { documents } = await database.listDocuments(Appwrite.databaseId, Appwrite.collections.products)
+        const { documents } = await productsCollection.getDocuments()
         setAppwriteProducts(documents)
-
-        console.log(documents)
-    }
-
-    const getCatPhoto = () => {
-        // getFile retorna un objeto con todos los datos del archivo
-        // getFileDownload retorna el url del archivo y además lo descarga
-        // getFilePreview retorna la url del archivo para visualizarlo, no lo descarga
-        // getFileView retorna la url del archivo para visualizarlo, no lo descarga
-        const url = storage.getFileView(Appwrite.buckets.pictures, '675a2d2b0031abed8498')
-        setCatPhotoUrl(url)
-
-        console.log(catPhotoUrl, 'getCatPhoto')
     }
 
     const uploadPhoto = async (e) => {
         e.preventDefault()
 
         if (formulario.current) {
-            const form = new FormData(formulario.current)
-            const formObject = Object.fromEntries(form.entries())
-
-            console.log(formObject)
+            const formObject = getFormEntries(formulario.current)
 
             // se sube la imagen
             const imageId = ID.unique()
-            await storage.createFile(Appwrite.buckets.pictures, imageId, formObject.image)
+            await photoBucket.createFile(imageId, formObject.image)
 
             // obtengo el url que va en el thumbnail
-            const url: string = storage.getFilePreview(Appwrite.buckets.pictures, imageId)
+            const { previewUrl } = await photoBucket.getFile(imageId)
 
             const product = {
                 name: formObject.name,
-                thumbnail: url,
+                thumbnail: previewUrl,
                 description: formObject.description,
                 price: Number(formObject.price),
                 active: formObject.active ? true : false
             }
 
-            database.createDocument(Appwrite.databaseId, Appwrite.collections.products, ID.unique(), product)
-                .then(() => {
-                    toast.success('Producto creado')
-                    formulario.current.reset()
-                    getProductsFromAppwrite()
-                }).catch(() => {
-                    toast.error('Producto no se llegó a subir')
-                })
+            await productsCollection.createDocument(product).then(() => {
+                toast.success('Producto creado')
+                formulario.current.reset()
+                getProductsFromAppwrite()
+            }).catch(() => {
+                toast.error('Producto no se llegó a subir')
+            })
         }
 
     }
 
     const deleteAppwriteProduct = async (id: string) => {
-        await database.deleteDocument(Appwrite.databaseId, Appwrite.collections.products, id).then(() => {
+        await productsCollection.deleteDocument(id).then(() => {
             toast.success('Gatito eliminado')
             getProductsFromAppwrite()
         }).catch(() => {
@@ -104,25 +92,9 @@ const Products = () => {
         })
     }
 
-    const validateEmail = async () => {
-        // const urlParams = new URLSearchParams(window.location.search)
-
-        // const userId = urlParams.get('userId')!
-        // const secret = urlParams.get('secret')!
-
-        // await account.updateVerification(userId, secret).then(() => {
-        //     toast.success('Correo verificado')
-        // })
-
-        const cuenta = await account.get()
-        console.log(cuenta)
-    }
-
     useEffect(() => {
         getProducts()
         getProductsFromAppwrite()
-        getCatPhoto()
-        // validateEmail()
     }, [])
 
     return (

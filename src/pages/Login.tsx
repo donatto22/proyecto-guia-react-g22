@@ -55,7 +55,7 @@ const Login = () => {
     useEffect(() => {
         const session = localStorage.getItem('cookieFallback')
 
-        if (session) navigate('/products')
+        if (session && JSON.parse(session).length != 0) navigate('/products')
     })
 
     return (
