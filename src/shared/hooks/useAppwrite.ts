@@ -15,8 +15,8 @@ const useAppwrite = () => {
                 return await database.createDocument(databaseId, collectionId, ID.unique(), data)
             }
 
-            const updateDocument = async (data: object) => {
-                return await database.updateDocument(databaseId, collectionId, ID.unique(), data)
+            const updateDocument = async (documentId: string, data: object) => {
+                return await database.updateDocument(databaseId, collectionId, documentId, data)
             }
 
             const deleteDocument = async (documentId: string) => {
@@ -70,6 +70,36 @@ const useAppwrite = () => {
         }
     }
 
+    const fromSession = () => {
+        const login = async (email: string, password: string) => {
+            return await account.createEmailPasswordSession(email, password)
+        }
+
+        const logout = async (sessionId: string) => {
+            return await account.deleteSession(sessionId)
+        }
+
+        /**
+         * Also known as "signup"
+         */
+        const createAccount = async (email: string, password: string, name?: string) => {
+            return await account.create(ID.unique(), email, password, name)
+        }
+
+        /**
+         * @param phone Dont forget to add country code
+         * @param password 
+         * @returns 
+         */
+        const updatePhone = async (phone: string, password: string) => {
+            return await account.updatePhone(phone, password)
+        }
+
+        return {
+            login, logout, createAccount, updatePhone
+        }
+    }
+
     const verificate = () => {
         const phone = async () => {
             return await account.createPhoneVerification()
@@ -93,7 +123,7 @@ const useAppwrite = () => {
     }
 
     return {
-        account, fromDatabase, fromStorage, verificate
+        account, fromDatabase, fromStorage, verificate, fromSession
     }
 }
 

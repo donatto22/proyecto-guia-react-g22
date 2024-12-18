@@ -9,11 +9,14 @@ import { Appwrite } from '../shared/lib/env'
 import { toast, Toaster } from 'sonner'
 
 import logo from '/my-logo.png'
+import useAppwrite from '@hooks/useAppwrite'
 
 const Login = () => {
     const loginForm = useRef(null)
     const crearCuentaForm = useRef(null)
     const navigate = useNavigate()
+
+    const { fromSession } = useAppwrite()
 
     const ingresar = async (e: React.MouseEvent) => {
         e.preventDefault()
@@ -24,7 +27,7 @@ const Login = () => {
             const form = new FormData(formulario)
             const { email, password } = Object.fromEntries(form.entries()) as { [k: string]: string }
 
-            const session = await account.createEmailPasswordSession(email, password)
+            const session = await fromSession().login(email, password)
 
             localStorage.setItem('sessionId', session.$id)
 

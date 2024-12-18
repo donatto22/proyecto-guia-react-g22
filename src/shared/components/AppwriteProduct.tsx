@@ -2,15 +2,17 @@ import { useEffect, useRef, useState } from 'react'
 import { Box, Button, ButtonGroup, FormControl, FormLabel, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, Tooltip, useDisclosure } from '@chakra-ui/react'
 import { toast } from 'sonner'
 import { PersonalProduct } from '../declarations/Database'
-import { database, ID, storage } from '../lib/appwrite'
+import { ID, storage } from '../lib/appwrite'
 import { Appwrite } from '../lib/env'
 
 import { MdModeEdit } from "react-icons/md"
 import DeleteButton from './DeleteButton'
+import useAppwrite from '@hooks/useAppwrite'
 
-const AppwriteProduct = ({ product, deleteAppwriteProduct }: {
+const AppwriteProduct = ({ product, deleteAppwriteProduct, onRefresh }: {
     product: PersonalProduct
     deleteAppwriteProduct: (id: string) => void
+    onRefresh?: () => void
 }) => {
     const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -22,32 +24,49 @@ const AppwriteProduct = ({ product, deleteAppwriteProduct }: {
     const [price, setPrice] = useState(product.price)
     const [active, setActive] = useState<boolean>(product.active)
 
-    const edit = async () => {
-        // eliminar la foto anterior
-        await storage.deleteFile(Appwrite.buckets.pictures, product.imageId)
+    const { fromDatabase, fromStorage } = useAppwrite()
+    const productsCollection = fromDatabase(Appwrite.databaseId).collection(Appwrite.collections.products)
+    const photoBucket = fromStorage().bucket(Appwrite.buckets.pictures)
+
+    const edit = async (e) => {
+        e.preventDefault()
 
         // subir la nueva foto
         const formulario = modalForm.current
+
+        const newProduct = {
+            name: name,
+            description: description,
+            price: price,
+            active: active
+        }
 
         if (formulario) {
             const form = new FormData(formulario)
             const { nuevaImagen } = Object.fromEntries(form.entries()) as { [k: string]: File }
 
-            const idUnique = ID.unique()
-            await storage.createFile(Appwrite.buckets.pictures, idUnique, nuevaImagen)
+            if (nuevaImagen.size == 0) {
+                // tomar la foto anterior
+                newProduct.imageId = product.imageId
+            } else {
+                // eliminar la foto anterior
+                await photoBucket.deleteFile(product.imageId)
 
-            // guardar el ID de la nueva imagen
-            const newProduct = {
-                name: name,
-                description: description,
-                imageId: idUnique,
-                price: price,
-                active: active
+                const idUnique = ID.unique()
+                await photoBucket.createFile(idUnique, nuevaImagen)
+
+                // // guardar el ID de la nueva imagen
+                newProduct.imageId = idUnique
             }
 
-            await database.updateDocument(Appwrite.databaseId, Appwrite.collections.products, product.$id, newProduct)
+            await productsCollection.updateDocument(product.$id, newProduct)
                 .then(() => {
                     toast.success('Producto editado')
+
+                    if (onRefresh) {
+                        onRefresh()
+                    }
+                    onClose()
                 }).catch(() => {
                     toast.error('no se logró editar el producto')
                 })
@@ -64,7 +83,7 @@ const AppwriteProduct = ({ product, deleteAppwriteProduct }: {
     }, [])
 
     return (
-        <Box key={product.name} bgColor='#eee' borderRadius='20px' w='300px' display='flex' gap='1em'>
+        <Box key={product.name} bgColor='#eee' borderRadius='20px' minW='300px' display='flex' gap='1em'>
             <Image src={imageUrl} width='100px' borderRadius='20px' p={2} />
             <Box display='flex' flexDir='column' justifyContent='space-around'>
                 <Text fontSize='20px'>{product.name}</Text>
@@ -89,10 +108,10 @@ const AppwriteProduct = ({ product, deleteAppwriteProduct }: {
                 onClose={onClose}
             >
                 <ModalOverlay />
-                <ModalContent>
+                <ModalContent as='form' ref={modalForm} onSubmit={edit}>
                     <ModalHeader>Editar Producto</ModalHeader>
                     <ModalCloseButton />
-                    <ModalBody pb={6} as='form' ref={modalForm}>
+                    <ModalBody pb={6}>
                         <FormControl display='flex' alignItems='center' flexDir='column' gap={4}>
                             <Image src={imageUrl} width='160px' borderRadius='10px' />
                             <input name='nuevaImagen' type="file" />
@@ -100,12 +119,12 @@ const AppwriteProduct = ({ product, deleteAppwriteProduct }: {
 
                         <FormControl mt={4}>
                             <FormLabel>Nombre</FormLabel>
-                            <Input value={name} onChange={(e) => setName(e.target.value)} />
+                            <Input required value={name} onChange={(e) => setName(e.target.value)} />
                         </FormControl>
 
                         <FormControl mt={4}>
                             <FormLabel>Descripcion</FormLabel>
-                            <Input value={description} onChange={(e) => setDescription(e.target.value)} />
+                            <Input required value={description} onChange={(e) => setDescription(e.target.value)} />
                         </FormControl>
 
                         <FormControl mt={4}>
@@ -120,7 +139,7 @@ const AppwriteProduct = ({ product, deleteAppwriteProduct }: {
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button colorScheme='blue' mr={3} onClick={edit}>
+                        <Button colorScheme='blue' mr={3} type='submit'>
                             Guardar
                         </Button>
                         <Button onClick={onClose}>Cancelar</Button>

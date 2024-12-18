@@ -6,3 +6,8 @@ export type PersonalProduct = {
     active: boolean
     imageId: string
 }
+
+export type MyProducts = {
+    total: number
+    documents: [PersonalProduct]
+}
