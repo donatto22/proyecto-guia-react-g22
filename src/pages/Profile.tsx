@@ -1,11 +1,14 @@
 import { Box, Button, FormLabel, Input } from '@chakra-ui/react'
 import BaseLayout from '@layouts/BaseLayout'
-import { useEffect } from 'react'
+import { useContext, useEffect } from 'react'
 import { account, database } from '../shared/lib/appwrite'
 import { Appwrite } from '../shared/lib/env'
 import { Query } from 'appwrite'
+import { UserContext } from '../shared/context/UserContext'
 
 const Profile = () => {
+    const context = useContext(UserContext)
+
     async function getProfile() {
         const cuenta = await account.get()
 
@@ -18,6 +21,7 @@ const Profile = () => {
 
     useEffect(() => {
         getProfile()
+        console.log(context?.session)
     }, [])
 
     return (

@@ -1,16 +1,18 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Box } from '@chakra-ui/react'
 import BaseLayout from '@layouts/BaseLayout'
 
 import { Appwrite } from '../shared/lib/env'
-import { PersonalProduct } from 'src/shared/declarations/Database'
+import { PersonalProduct } from '../shared/declarations/Database'
 import useAppwrite from '@hooks/useAppwrite'
 import MyProducts from '@components/MyProducts'
 import Carousel from '@components/Carousel'
 import DummyProducts from '@components/DummyProducts'
+import { UserContext } from '../shared/context/UserContext'
 
 const Products = () => {
     const [appwriteProducts, setAppwriteProducts] = useState<Array<PersonalProduct>>([])
+    const context = useContext(UserContext)
 
     // separando en trocitos
     const { fromDatabase } = useAppwrite()
@@ -23,6 +25,8 @@ const Products = () => {
 
     useEffect(() => {
         getProductsFromAppwrite()
+
+        console.log(context.session)
     }, [])
 
     return (

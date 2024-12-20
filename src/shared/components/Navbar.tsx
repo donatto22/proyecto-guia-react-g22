@@ -1,12 +1,13 @@
-import { ReactElement, useEffect, useRef, useState } from 'react'
-import { Box, Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, HStack, Image, Input, Link, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure } from '@chakra-ui/react'
+import { ReactElement, useContext, useEffect, useRef, useState } from 'react'
+import { Box, Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, HStack, Image, Input, Link as ChakraLink, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure } from '@chakra-ui/react'
 import { RiHomeLine } from "react-icons/ri"
 import { FaUsers } from "react-icons/fa"
 import { LuCircleUserRound, LuShoppingCart } from "react-icons/lu"
 
 import logo from '/my-logo.png'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { account } from '../lib/appwrite'
+import { UserContext } from '../context/UserContext'
 
 const NavLink = ({ icon, text, reference, onClick }: {
     icon: ReactElement,
@@ -14,17 +15,16 @@ const NavLink = ({ icon, text, reference, onClick }: {
     onClick: () => void
 }) => {
     return (
-        <Link ref={reference} onClick={onClick} display='flex' gap='10px' alignItems='center'> {icon} {text}</Link>
+        <ChakraLink ref={reference} onClick={onClick} display='flex' gap='10px' alignItems='center'> {icon} {text}</ChakraLink>
     )
 }
 
 const ProfileMenu = ({ username }: { username: string }) => {
     const navigate = useNavigate()
+    const userContext = useContext(UserContext)
 
     const logout = async () => {
-        const sessionId: string = localStorage.getItem('sessionId')!
-        await account.deleteSession(sessionId)
-        localStorage.removeItem('sessionId')
+        await userContext?.logout()
         // toast.success('Has cerrado sesión')
         navigate('/')
     }
@@ -35,7 +35,8 @@ const ProfileMenu = ({ username }: { username: string }) => {
                 <Box display='flex' gap='10px' alignItems='center'> <LuCircleUserRound /> {username}</Box>
             </MenuButton>
             <MenuList color='#1a1a1a'>
-                <MenuItem>Ver Perfil</MenuItem>
+                <MenuItem><Link to='/profile'>Ver Perfil</Link></MenuItem>
+                <MenuItem><Link to='/products'>Productos</Link></MenuItem>
                 <MenuItem>Vaciar carrito</MenuItem>
                 <MenuItem onClick={logout}>Cerrar Sesión</MenuItem>
             </MenuList>

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useContext, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { Box, Button, FormLabel, Image, Input, Stack, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react'
@@ -9,14 +9,14 @@ import { Appwrite } from '../shared/lib/env'
 import { toast, Toaster } from 'sonner'
 
 import logo from '/my-logo.png'
-import useAppwrite from '@hooks/useAppwrite'
+import { UserContext } from '../shared/context/UserContext'
 
 const Login = () => {
     const loginForm = useRef(null)
     const crearCuentaForm = useRef(null)
     const navigate = useNavigate()
 
-    const { fromSession } = useAppwrite()
+    const userContext = useContext(UserContext)
 
     const ingresar = async (e: React.MouseEvent) => {
         e.preventDefault()
@@ -27,9 +27,7 @@ const Login = () => {
             const form = new FormData(formulario)
             const { email, password } = Object.fromEntries(form.entries()) as { [k: string]: string }
 
-            const session = await fromSession().login(email, password)
-
-            localStorage.setItem('sessionId', session.$id)
+            await userContext?.login(email, password)
 
             navigate('/products')
         }
@@ -59,6 +57,8 @@ const Login = () => {
         const session = localStorage.getItem('cookieFallback')
 
         if (session && JSON.parse(session).length != 0) navigate('/products')
+
+        console.log(userContext?.session)
     })
 
     return (
