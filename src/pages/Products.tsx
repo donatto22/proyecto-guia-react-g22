@@ -9,6 +9,7 @@ import MyProducts from '@components/MyProducts'
 import Carousel from '@components/Carousel'
 import DummyProducts from '@components/DummyProducts'
 import { UserContext } from '../shared/context/UserContext'
+import { Query } from 'appwrite'
 
 const Products = () => {
     const [appwriteProducts, setAppwriteProducts] = useState<Array<PersonalProduct>>([])
@@ -19,14 +20,14 @@ const Products = () => {
     const productsCollection = fromDatabase(Appwrite.databaseId).collection(Appwrite.collections.products)
 
     const getProductsFromAppwrite = async () => {
-        const { documents } = await productsCollection.getDocuments()
+        const { documents } = await productsCollection.getDocuments([
+            Query.equal('ownerId', context?.session.userId)
+        ])
         setAppwriteProducts(documents)
     }
 
     useEffect(() => {
         getProductsFromAppwrite()
-
-        console.log(context.session)
     }, [])
 
     return (

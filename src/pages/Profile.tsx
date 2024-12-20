@@ -1,32 +1,17 @@
-import { Box, Button, FormLabel, Input } from '@chakra-ui/react'
+import { Box, Button, FormLabel, Input, Text } from '@chakra-ui/react'
 import BaseLayout from '@layouts/BaseLayout'
 import { useContext, useEffect } from 'react'
-import { account, database } from '../shared/lib/appwrite'
-import { Appwrite } from '../shared/lib/env'
-import { Query } from 'appwrite'
 import { UserContext } from '../shared/context/UserContext'
 
 const Profile = () => {
     const context = useContext(UserContext)
 
-    async function getProfile() {
-        const cuenta = await account.get()
-
-        const { documents } = await database.listDocuments(Appwrite.databaseId, Appwrite.collections.profiles, [
-            Query.equal('userId', cuenta.$id)
-        ])
-
-        console.log(documents[0])
-    }
-
-    useEffect(() => {
-        getProfile()
-        console.log(context?.session)
-    }, [])
-
     return (
         <BaseLayout>
             <Box as='form' display='flex' flexDir='column' gap='1em' width='500px' m='0 auto'>
+                {
+                    context?.profile.nickname ? <Text>'Tiene apodo' </Text> : <Text>'No tiene apodo'</Text>
+                }
                 <Box>
                     <FormLabel htmlFor="nickname">Apodo</FormLabel>
                     <Input type="text" name='nickname' id='nickname' />
