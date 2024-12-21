@@ -1,17 +1,31 @@
-import { Box, Button, FormLabel, Input, Text } from '@chakra-ui/react'
+import { Box, Button, FormLabel, Image, Input, Text } from '@chakra-ui/react'
 import BaseLayout from '@layouts/BaseLayout'
-import { useContext, useEffect } from 'react'
+import { useContext } from 'react'
 import { UserContext } from '../shared/context/UserContext'
+import MyProducts from '@components/MyProducts'
 
 const Profile = () => {
     const context = useContext(UserContext)
 
     return (
         <BaseLayout>
-            <Box as='form' display='flex' flexDir='column' gap='1em' width='500px' m='0 auto'>
+            <Box width='70%' m='2em auto' bgColor='gray'>
                 {
-                    context?.profile.nickname ? <Text>'Tiene apodo' </Text> : <Text>'No tiene apodo'</Text>
+                    context?.profile && <Image src={context.profile.bannerUrl} alt='profile banner' />
                 }
+
+                {
+                    context?.products ? <MyProducts products={context?.products} onRefresh={context?.getProfileProducts} /> :
+                        <Text>Cargando...</Text>
+                }
+
+
+                {
+                    context?.profile?.nickname ? <Text fontSize='30px'> {context?.profile?.nickname} </Text> : <Text>'No tiene apodo'</Text>
+                }
+            </Box>
+
+            <Box as='form' display='flex' flexDir='column' gap='1em' width='500px' m='0 auto'>
                 <Box>
                     <FormLabel htmlFor="nickname">Apodo</FormLabel>
                     <Input type="text" name='nickname' id='nickname' />

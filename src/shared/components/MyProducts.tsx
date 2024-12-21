@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useContext, useRef } from 'react'
 import { Box, Button, FormControl, FormLabel, Heading, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, useDisclosure } from '@chakra-ui/react'
 import AppwriteProduct from './AppwriteProduct'
 import { PersonalProduct } from '../declarations/Database'
@@ -7,16 +7,19 @@ import useAppwrite from '@hooks/useAppwrite'
 import { Appwrite } from '../lib/env'
 import { ID } from '../lib/appwrite'
 import { getFormEntries } from '../util/getFormEntries'
+import { UserContext } from '../context/UserContext'
 
 const MyProducts = ({ products, onRefresh }: {
     products: PersonalProduct[]
     onRefresh?: () => void
 }) => {
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const userContext = useContext(UserContext)
     const modalForm = useRef(null)
 
     const { fromDatabase, fromStorage } = useAppwrite()
     const productsCollection = fromDatabase(Appwrite.databaseId).collection(Appwrite.collections.products)
+    const profileCollection = fromDatabase(Appwrite.databaseId).collection(Appwrite.collections.profiles)
     const photoBucket = fromStorage().bucket(Appwrite.buckets.pictures)
 
     const deleteAppwriteProduct = async (id: string) => {
@@ -49,7 +52,14 @@ const MyProducts = ({ products, onRefresh }: {
                 active: formObject.active ? true : false
             }
 
-            await productsCollection.createDocument(product).then(() => {
+            await productsCollection.createDocument(product).then(async (newProduct) => {
+                await profileCollection.updateDocument(userContext?.profile.$id, {
+                    products: [
+                        // eslint-disable-next-line no-unsafe-optional-chaining
+                        ...userContext?.profile.products, newProduct.$id
+                    ]
+                })
+
                 toast.success('Producto creado')
                 modalForm.current.reset()
 

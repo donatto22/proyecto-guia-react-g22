@@ -1,5 +1,6 @@
-export type PersonalProduct = {
-    $id: string
+import { Models } from 'appwrite'
+
+export interface PersonalProduct extends Models.Document {
     name: string
     description: string
     price: number

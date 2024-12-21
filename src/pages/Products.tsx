@@ -37,7 +37,7 @@ const Products = () => {
                     <Carousel />
                 </Box>
 
-                <MyProducts products={appwriteProducts} onRefresh={getProductsFromAppwrite} />
+                {/* <MyProducts products={appwriteProducts} onRefresh={getProductsFromAppwrite} /> */}
 
                 <br />
 
