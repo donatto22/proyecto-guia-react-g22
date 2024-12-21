@@ -32,7 +32,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [profile, setProfile] = useState<Profile | null>()
     const [products, setProducts] = useState<Array<PersonalProduct> | null>()
 
-    const [loading, setLoading] = useState(true)
+    const [logged, setLogged] = useState(false)
 
     const { fromSession, fromDatabase, fromStorage } = useAppwrite()
     const profileCollection = fromDatabase(Appwrite.databaseId).collection(Appwrite.collections.profiles)
@@ -43,6 +43,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         setSession(appwriteSession)
 
         localStorage.setItem('session', JSON.stringify(appwriteSession))
+        setLogged(true)
     }
 
     const logout = async () => {
@@ -51,6 +52,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
         setProfile(null)
         setSession(null)
+        setProducts(null)
+        setLogged(false)
     }
 
     const getProfile = async (previousSession: object) => {
@@ -92,21 +95,16 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
         if (previousSession) {
             setSession(previousSession)
+            setLogged(true)
         }
 
         await getProfile(previousSession)
         await getProfileProducts()
-        console.log(products)
-        setLoading(false)
     }
 
     useEffect(() => {
         loadData()
-    }, [])
-
-    if (!loading) {
-        return <div>Cargando...</div>
-    }
+    }, [logged])
 
     return (
         <UserContext.Provider value={{ session, profile, products, login, logout, getProfileProducts }}>
@@ -115,4 +113,5 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             </Suspense>
         </UserContext.Provider>
     )
+
 }
