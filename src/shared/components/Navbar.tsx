@@ -1,5 +1,5 @@
 import { ReactElement, useContext, useEffect, useRef, useState } from 'react'
-import { Box, Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, HStack, Image, Input, Link as ChakraLink, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure } from '@chakra-ui/react'
+import { Box, Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, HStack, Image, Input, Link as ChakraLink, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure, VStack } from '@chakra-ui/react'
 import { RiHomeLine } from "react-icons/ri"
 import { FaUsers } from "react-icons/fa"
 import { LuCircleUserRound, LuShoppingCart } from "react-icons/lu"
@@ -8,6 +8,7 @@ import logo from '/my-logo.png'
 import { Link, useNavigate } from 'react-router-dom'
 import { account } from '../lib/appwrite'
 import { UserContext } from '../context/UserContext'
+import { useCartStore } from '../store/useCartStore'
 
 const NavLink = ({ icon, text, reference, onClick }: {
     icon: ReactElement,
@@ -48,6 +49,8 @@ const Navbar = () => {
     const btnRef = useRef()
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [username, setUsername] = useState()
+    const { cartProducts } = useCartStore()
+    const navigate = useNavigate()
 
     async function getUser() {
         const cuenta = await account.get()
@@ -57,6 +60,12 @@ const Navbar = () => {
     useEffect(() => {
         getUser()
     }, [])
+
+
+    const goToPay = () => {
+        navigate('/billing')
+
+    }
 
     return (
         <>
@@ -78,7 +87,7 @@ const Navbar = () => {
                 </HStack>
             </HStack>
 
-            <Drawer
+            <Drawer size='md'
                 isOpen={isOpen}
                 placement='right'
                 onClose={onClose}
@@ -90,14 +99,23 @@ const Navbar = () => {
                     <DrawerHeader>Create your account</DrawerHeader>
 
                     <DrawerBody>
-                        <Input placeholder='Type here...' />
+                        <VStack>
+                            {
+                                cartProducts.map(product => (
+                                    <HStack w='100%' bgColor='#1e1e1e' color='#eee' p='1em' borderRadius='10px'>
+                                        <Image src={product.thumbnail} w='50px' />
+                                        <Text>{product.title}</Text>
+                                    </HStack>
+                                ))
+                            }
+                        </VStack>
                     </DrawerBody>
 
                     <DrawerFooter>
                         <Button variant='outline' mr={3} onClick={onClose}>
                             Cancel
                         </Button>
-                        <Button colorScheme='blue'>Save</Button>
+                        <Button colorScheme='blue' onClick={goToPay}>Comprar</Button>
                     </DrawerFooter>
                 </DrawerContent>
             </Drawer>
