@@ -1,8 +1,9 @@
 import { ReactElement, useContext, useEffect, useRef, useState } from 'react'
-import { Box, Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, HStack, Image, Input, Link as ChakraLink, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure, VStack } from '@chakra-ui/react'
+import { Box, Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, HStack, Image, Link as ChakraLink, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure, VStack } from '@chakra-ui/react'
 import { RiHomeLine } from "react-icons/ri"
 import { FaUsers } from "react-icons/fa"
 import { LuCircleUserRound, LuShoppingCart } from "react-icons/lu"
+import { MdDelete } from "react-icons/md"
 
 import logo from '/my-logo.png'
 import { Link, useNavigate } from 'react-router-dom'
@@ -49,7 +50,7 @@ const Navbar = () => {
     const btnRef = useRef()
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [username, setUsername] = useState()
-    const { cartProducts } = useCartStore()
+    const { cartProducts, removeProduct } = useCartStore()
     const navigate = useNavigate()
 
     async function getUser() {
@@ -64,7 +65,6 @@ const Navbar = () => {
 
     const goToPay = () => {
         navigate('/billing')
-
     }
 
     return (
@@ -102,9 +102,15 @@ const Navbar = () => {
                         <VStack>
                             {
                                 cartProducts.map(product => (
-                                    <HStack w='100%' bgColor='#1e1e1e' color='#eee' p='1em' borderRadius='10px'>
+                                    <HStack w='100%' bgColor='#eee' color='#1a1a1a' p='1em' borderRadius='10px'>
                                         <Image src={product.thumbnail} w='50px' />
-                                        <Text>{product.title}</Text>
+                                        <VStack align='start'>
+                                            <Text>{product.title}</Text>
+                                            <Button bgColor='red.200' onClick={() => removeProduct(product.id)}>
+                                                <MdDelete color='darkred' />
+                                            </Button>
+                                        </VStack>
+
                                     </HStack>
                                 ))
                             }
