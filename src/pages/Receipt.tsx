@@ -1,14 +1,49 @@
 import BaseLayout from '@layouts/BaseLayout'
 import { useCartStore } from '../shared/store/useCartStore'
-import { Button, HStack, Image, Table, TableContainer, Tag, Tbody, Td, Text, Tfoot, Th, Thead, Tr } from '@chakra-ui/react'
-import DemoPdf from '@components/DemoPdf'
+import { Button, Image, Table, TableContainer, Tag, Tbody, Td, Tfoot, Th, Thead, Tr } from '@chakra-ui/react'
 import SignatureCanvas from 'react-signature-canvas'
 
-import { IoMdAdd } from "react-icons/io"
-import { FiMinus } from "react-icons/fi"
+import { useEffect, useState } from 'react'
+import { PDFDownloadLink } from '@react-pdf/renderer'
+import QuantityButton from '@components/QuantityButton'
+import ReceiptPdf from '@components/ReceiptPdf'
+import useAppwrite from '@hooks/useAppwrite'
+import { Models } from 'appwrite'
 
 const Receipt = () => {
-    const { cartProducts, removeProduct, addOneProduct, removeOneProduct } = useCartStore()
+    const { cartProducts, removeProduct } = useCartStore()
+    const [sign, setSign] = useState<SignatureCanvas>()
+    const [signUrl, setSignUrl] = useState<string>()
+    const { account } = useAppwrite()
+    const [name, setName] = useState<string>()
+
+    const [totalPrice, setTotalPrice] = useState<number>()
+
+    const getTotalPrice = () => {
+        let suma = 0
+
+        cartProducts.forEach(p => {
+            suma += (p.price * p.quantity)
+        })
+
+        setTotalPrice(suma)
+        console.log(suma)
+    }
+
+    const tomarFoto = () => {
+        const url = sign?.getTrimmedCanvas().toDataURL()
+        setSignUrl(url)
+    }
+
+    const getName = async () => {
+        const profile: Models.User<Models.Preferences> = await account.get()
+        setName(profile.name)
+    }
+
+    useEffect(() => {
+        getName()
+        getTotalPrice()
+    }, [])
 
     return (
         <BaseLayout>
@@ -32,15 +67,7 @@ const Receipt = () => {
                                     <Td>{product.title}</Td>
                                     <Td><Tag>{product.category}</Tag></Td>
                                     <Td isNumeric>
-                                        <HStack justifyContent='end'>
-                                            <Button onClick={() => addOneProduct(product.id)}>
-                                                <IoMdAdd />
-                                            </Button>
-                                            <Text>{product.quantity}</Text>
-                                            <Button onClick={() => removeOneProduct(product.id)}>
-                                                <FiMinus />
-                                            </Button>
-                                        </HStack>
+                                        <QuantityButton product={product} />
                                     </Td>
                                     <Td isNumeric>S/. {(product.price * product.quantity).toFixed(2)}</Td>
                                     <Td>
@@ -65,10 +92,30 @@ const Receipt = () => {
                 </Table>
             </TableContainer>
 
-            <SignatureCanvas penColor='green'
+            <SignatureCanvas penColor='green' backgroundColor='#eee'
+                ref={data => setSign(data)}
                 canvasProps={{ width: 500, height: 200, className: 'sigCanvas' }} />
 
-            <DemoPdf />
+            <Button onClick={() => {
+                sign?.clear()
+            }}>Limpiar firma</Button>
+
+            <Button onClick={tomarFoto}>Tomar foto</Button>
+
+            {
+                signUrl && <Image src={signUrl} />
+            }
+
+            {
+                signUrl && (
+                    <PDFDownloadLink document={
+                        <ReceiptPdf totalPrice={totalPrice!}
+                            profileName={name!} signUrl={signUrl} cartProducts={cartProducts} />
+                    } >
+                        hola
+                    </PDFDownloadLink>
+                )
+            }
         </BaseLayout>
     )
 }

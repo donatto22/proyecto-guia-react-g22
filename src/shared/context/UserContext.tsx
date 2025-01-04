@@ -4,7 +4,7 @@ import { createContext, ReactNode, Suspense, useEffect, useState } from 'react'
 import { Appwrite } from '../lib/env'
 import Loading from '@components/Loading'
 import { PersonalProduct } from '../declarations/Database'
-interface Profile extends Models.Document {
+export interface Profile extends Models.Document {
     age: number
     bannerId: string
     photoId: string

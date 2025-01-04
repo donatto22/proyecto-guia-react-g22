@@ -50,7 +50,7 @@ export const useCartStore = create(persist<CartProducts>((set) => ({
         set((state) => ({
             cartProducts: state.cartProducts.map((cartP) =>
                 cartP.id == productId ? { ...cartP, quantity: cartP.quantity - 1 } : cartP
-            )
+            ).filter((cartP) => cartP.quantity > 0)
         }))
     }
 }), {

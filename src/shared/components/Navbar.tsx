@@ -10,6 +10,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { account } from '../lib/appwrite'
 import { UserContext } from '../context/UserContext'
 import { useCartStore } from '../store/useCartStore'
+import QuantityButton from './QuantityButton'
 
 const NavLink = ({ icon, text, reference, onClick }: {
     icon: ReactElement,
@@ -82,12 +83,12 @@ const Navbar = () => {
                         <ProfileMenu username={username} />
 
                         {/* Icono del carrito */}
-                        <NavLink ref={btnRef} onClick={onOpen} icon={<LuShoppingCart />} text='' />
+                        <NavLink ref={btnRef} onClick={onOpen} icon={<LuShoppingCart />} text={String(cartProducts.length)} />
                     </HStack>
                 </HStack>
             </HStack>
 
-            <Drawer size='md'
+            <Drawer size='sm'
                 isOpen={isOpen}
                 placement='right'
                 onClose={onClose}
@@ -96,20 +97,24 @@ const Navbar = () => {
                 <DrawerOverlay />
                 <DrawerContent>
                     <DrawerCloseButton />
-                    <DrawerHeader>Create your account</DrawerHeader>
+                    <DrawerHeader>Carrito: {cartProducts.length}</DrawerHeader>
 
                     <DrawerBody>
                         <VStack>
                             {
                                 cartProducts.map(product => (
-                                    <HStack w='100%' bgColor='#eee' color='#1a1a1a' p='1em' borderRadius='10px'>
-                                        <Image src={product.thumbnail} w='50px' />
-                                        <VStack align='start'>
-                                            <Text>{product.title}</Text>
+                                    <HStack w='100%' border='1px solid #eee' p='1em' borderRadius='10px'>
+                                        <Image src={product.thumbnail} w='50px' mr='10px' />
+                                        <HStack justifyContent='space-between' w='100%'>
+                                            <VStack align='start'>
+                                                <Text>{product.title}</Text>
+                                                <QuantityButton product={product} />
+                                            </VStack>
+
                                             <Button bgColor='red.200' onClick={() => removeProduct(product.id)}>
                                                 <MdDelete color='darkred' />
                                             </Button>
-                                        </VStack>
+                                        </HStack>
 
                                     </HStack>
                                 ))
