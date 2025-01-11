@@ -59,7 +59,7 @@ const Login = () => {
         if (session && JSON.parse(session).length != 0) navigate('/products')
 
         console.log(userContext?.session)
-    })
+    }, [])
 
     return (
         <>

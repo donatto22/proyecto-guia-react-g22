@@ -14,9 +14,11 @@ const Product = ({ product }: { product: DummyProduct }) => {
 
     return (
         <>
-            <Box w='300px' bgColor='#eee' borderRadius='20px' p='2em' display='flex' justifyContent='space-between' flexDir='column' gap='1em'>
-                <Image src={product.thumbnail} alt={product.description} loading='lazy' />
-                <Heading size='md'>
+            <Box w='300px' bgColor='#eee' borderRadius='20px' p='2em' display='flex' justifyContent='space-between' flexDir='column'>
+                <Image alignSelf='center' src={product.thumbnail} alt={product.description} loading='lazy' width={{
+                    base: 100, sm: 300
+                }} />
+                <Heading size={['sm', 'md']}>
                     <Link to={`/products/${product.id}`}>{product.title}</Link>
                 </Heading>
                 <Text>$ {product.price}</Text>

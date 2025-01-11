@@ -5,12 +5,13 @@ import { Toaster } from 'sonner'
 
 const AppOutlet = () => {
     const token = localStorage.getItem('cookieFallback')
+    const session = localStorage.getItem('session')
 
     return (
         <>
             <Toaster richColors />
             {
-                token ?
+                (token && session) ?
                     <Suspense fallback={<Loading />}>
                         <Outlet />
                     </Suspense>

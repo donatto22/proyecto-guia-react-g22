@@ -11,6 +11,7 @@ import { account } from '../lib/appwrite'
 import { UserContext } from '../context/UserContext'
 import { useCartStore } from '../store/useCartStore'
 import QuantityButton from './QuantityButton'
+import { FiMenu } from 'react-icons/fi'
 
 const NavLink = ({ icon, text, reference, onClick }: {
     icon: ReactElement,
@@ -71,16 +72,35 @@ const Navbar = () => {
     return (
         <>
             <HStack minH='40px' bgColor='#1a1a1a' mb='2em'>
-                <HStack w='70%' m='0 auto' p='1em 0' color='#eee' justifyContent='space-between'>
+                <HStack w='80%' m='0 auto' p='1em 0' color='#eee' justifyContent='space-between'>
                     <HStack gap='1em'>
                         <Image w='40px' src={logo} alt='logo tienda' />
                         <Text fontSize='2xl'>Mi tienda</Text>
                     </HStack>
 
                     <HStack gap='2em'>
-                        <NavLink icon={<RiHomeLine />} text='Inicio' />
-                        <NavLink icon={<FaUsers />} text='Nosotros' />
-                        <ProfileMenu username={username} />
+                        <HStack gap='2em' display={{
+                            base: 'none', md: 'flex'
+                        }}>
+                            <NavLink icon={<RiHomeLine />} text='Inicio' />
+                            <NavLink icon={<FaUsers />} text='Nosotros' />
+                            <ProfileMenu username={username} />
+                        </HStack>
+
+                        <VStack display={{
+                            base: 'flex', md: 'none'
+                        }}>
+                            <Menu>
+                                <MenuButton bgColor='green'>
+                                    <FiMenu />
+                                </MenuButton>
+                                <MenuList color='black'>
+                                    <MenuItem>Inicio</MenuItem>
+                                    <MenuItem>Nosotros</MenuItem>
+                                    <MenuItem>Perfil</MenuItem>
+                                </MenuList>
+                            </Menu>
+                        </VStack>
 
                         {/* Icono del carrito */}
                         <NavLink ref={btnRef} onClick={onOpen} icon={<LuShoppingCart />} text={String(cartProducts.length)} />
