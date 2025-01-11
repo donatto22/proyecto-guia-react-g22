@@ -10,6 +10,8 @@ import { toast, Toaster } from 'sonner'
 
 import logo from '/my-logo.png'
 import { UserContext } from '../shared/context/UserContext'
+import { Analytics } from "@vercel/analytics/react"
+
 
 const Login = () => {
     const loginForm = useRef(null)
@@ -63,6 +65,7 @@ const Login = () => {
 
     return (
         <>
+            <Analytics />
             <Toaster richColors />
             <Stack direction='row' h='100vh'>
                 <Box w='50%' bgImg={loginBackground} bgPos='center' bgSize='cover' />
