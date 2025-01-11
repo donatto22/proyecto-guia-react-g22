@@ -34,6 +34,7 @@ export type DummyProduct = {
     category: string
     thumbnail: string
     tags: Array<string>
+    quantity: number
 }
 
 export enum DummyEndpoints {
